@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "node16",
+        "target": "ES5", // set to the *lowest* target you support
+        "strict": true,
+        "esModuleInterop": true,
+        //   "verbatimModuleSyntax": true,
+        //   "declaration": true,
+        //   "sourceMap": true,
+        //   "declarationMap": true,
+        "outDir": "./dist"
+    },
+    // "references": [
+    //     { "path": "./src" }
+    // ]
+
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
+}

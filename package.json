@@ -1,0 +1,28 @@
+{
+  "name": "view-model",
+  "version": "1.0.0",
+  "description": "This is the VM from MVVM",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "repository": "git@github.com:carlosalexandre1985/viewmodel.git",
+  "author": "Carlos Alexanre <carlosalexandre1985@icloud.com>",
+  "license": "MIT",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "rm ./dist -rf && tsc --build",
+    "test": "jest",
+    "test-watch": "yarn test --watchAll",
+    "test-debug": "node --debug-brk --inspect ./node_modules/jest/bin/jest -i"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
