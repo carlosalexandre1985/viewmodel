@@ -21,9 +21,14 @@ describe(`Given an EntityUtil class`, () => {
 
                 entity.addField('attribute1', 'Attribute 1')
                 entity.addField('attribute2', 100.98)
+                entity.addField('dateAttribute', new Date('1985-11-26T17:50:03.998Z'))
+                entity.addField('readOnlyAttribute', 0, () => {
+                    return entity.attribute2 + 0.02
+                })
                 entity.publicField = 'Public Field'
                 entity.nullableField = null
                 entity._privateAttribute = 'Private Attribute'
+                entity.addCollectionField('items', Entity)
 
                 const specialization: Entity = new Entity(false, entity)
                 specialization.addField('attribute1', 'Attribute 1')
@@ -54,6 +59,8 @@ describe(`Given an EntityUtil class`, () => {
                                 id: 0,
                                 attribute1: 'Attribute 1',
                                 attribute2: 100.98,
+                                readOnlyAttribute: 101,
+                                dateAttribute: '1985-11-26T17:50:03.998Z',
                                 publicField: 'Public Field',
                                 nullableField: null,
                                 specialization: {
@@ -61,7 +68,8 @@ describe(`Given an EntityUtil class`, () => {
                                     attribute1: 'Attribute 1',
                                     attribute2: 'Attribute 2',
                                     publicField: 'Public Field',
-                                }
+                                },
+                                items: []
                             })
                         })
                     })
@@ -74,6 +82,62 @@ describe(`Given an EntityUtil class`, () => {
                         test(`Then json should contain only id attribute`, () => {
                             expect(json).toEqual({
                                 id: 0
+                            })
+                        })
+                    })
+
+                    describe(`When json is populated with attributes`, () => {
+                        beforeEach(() => {
+                            json = {
+                                id: 0,
+                                attribute1: 'Attribute 1 - Changed',
+                                attribute2: 900.98,
+                                readOnlyAttribute: 10,
+                                nonExistentAttribute: 'any',
+                                dateAttribute: '1985-11-26T17:50:05.998Z',
+                                publicField: 'Public Field - Changed',
+                                _privateAttribute: 'Private Content',
+                                nullableField: null,
+                                specialization: {
+                                    id: 0,
+                                    attribute1: 'Attribute 1 - Changed',
+                                    attribute2: 'Attribute 2 - Changed',
+                                    publicField: 'Public Field - Changed',
+                                },
+                                items: [
+                                    {id: '1'},
+                                    {id: '2'},
+                                    {id: '3'}
+                                ]
+                            }
+                        })
+
+                        describe(`And populateEntityWithJSONjson static method is called`, () => {
+                            beforeEach(() => {
+                                EntityUtil.populateEntityWithJSON(entity, json)
+                            })
+
+                            test(`Then json should contain the correct attributes`, () => {
+                                expect(entity.json).toEqual({
+                                    id: 0,
+                                    attribute1: 'Attribute 1 - Changed',
+                                    attribute2: 900.98,
+                                    readOnlyAttribute: 901,
+                                    dateAttribute: '1985-11-26T17:50:05.998Z',
+                                    publicField: 'Public Field - Changed',
+                                    nullableField: null,
+                                    specialization: {
+                                        id: 0,
+                                        attribute1: 'Attribute 1 - Changed',
+                                        attribute2: 'Attribute 2 - Changed',
+                                        publicField: 'Public Field - Changed',
+                                    },
+                                    items: [
+                                        {id: '1'},
+                                        {id: '2'},
+                                        {id: '3'}
+                                    ]
+                                })
                             })
                         })
                     })
@@ -96,6 +160,8 @@ describe(`Given an EntityUtil class`, () => {
                                 id: 0,
                                 attribute1: 'Attribute 1',
                                 attribute2: 100.98,
+                                readOnlyAttribute: 101,
+                                dateAttribute: '1985-11-26T17:50:03.998Z',
                                 publicField: 'Public Field',
                                 nullableField: null,
                                 specialization: {
@@ -103,7 +169,8 @@ describe(`Given an EntityUtil class`, () => {
                                     attribute1: 'Attribute 1',
                                     attribute2: 'Attribute 2',
                                     publicField: 'Public Field',
-                                }
+                                },
+                                items: []
                             })
                         })
                     })
@@ -142,6 +209,8 @@ describe(`Given an EntityUtil class`, () => {
                                 id: 0,
                                 attribute1: 'Attribute 1',
                                 attribute2: 100.98,
+                                readOnlyAttribute: 101,
+                                dateAttribute: '1985-11-26T17:50:03.998Z',
                                 publicField: 'Public Field',
                                 nullableField: null,
                                 specialization: {
@@ -149,7 +218,8 @@ describe(`Given an EntityUtil class`, () => {
                                     attribute1: 'Attribute 1',
                                     attribute2: 'Attribute 2',
                                     publicField: 'Public Field',
-                                }
+                                },
+                                items: []
                             })
                         })
                     })
@@ -164,11 +234,14 @@ describe(`Given an EntityUtil class`, () => {
                                 id: 0,
                                 attribute1: 'Attribute 1',
                                 attribute2: 100.98,
+                                readOnlyAttribute: 101,
+                                dateAttribute: '1985-11-26T17:50:03.998Z',
                                 publicField: 'Public Field',
                                 nullableField: null,
                                 specialization: {
                                     id: 0
-                                }
+                                },
+                                items: []
                             })
                         })
                     })
@@ -191,6 +264,8 @@ describe(`Given an EntityUtil class`, () => {
                                 id: 0,
                                 attribute1: 'Attribute 1',
                                 attribute2: 100.98,
+                                readOnlyAttribute: 101,
+                                dateAttribute: '1985-11-26T17:50:03.998Z',
                                 publicField: 'Public Field',
                                 nullableField: null,
                                 specialization: {
@@ -198,7 +273,8 @@ describe(`Given an EntityUtil class`, () => {
                                     attribute1: 'Attribute 1',
                                     attribute2: 'Attribute 2',
                                     publicField: 'Public Field',
-                                }
+                                },
+                                items: []
                             })
                         })
                     })
@@ -208,16 +284,19 @@ describe(`Given an EntityUtil class`, () => {
                             EntityUtil.populateJSONWithEntity(entity, json, true)
                         })
 
-                        test(`Then json should contain only id attribute`, () => {
+                        test(`Then json should contain the attributes that should be persisted`, () => {
                             expect(json).toEqual({
                                 id: 0,
                                 attribute1: 'Attribute 1',
                                 attribute2: 100.98,
+                                readOnlyAttribute: 101,
+                                dateAttribute: '1985-11-26T17:50:03.998Z',
                                 publicField: 'Public Field',
                                 nullableField: null,
                                 specialization: {
                                     id: 0,
-                                }
+                                },
+                                items: []
                             })
                         })
                     })

@@ -132,11 +132,82 @@ describe(`Given an instance of Entity called entity with default constructor`, (
         })
     })
 
-    describe(`When entity.json is called`, () => {
-        test(`Then EntityUtil.populateJSONWithEntity should be called`, () => {
-            const json = entity.json
+    describe(`When entity adds a new collection field called "items"`, () => {
+        beforeEach(() => {
+            entity.addCollectionField('items', Entity)
+        })
 
-            expect(EntityUtil.populateJSONWithEntity).toHaveBeenCalledWith(entity, {})
+        test(`Then items.data should be an array`, () => {
+            expect(entity.items.data).toBeDefined()
+        })
+    })
+
+    describe(`When entity.json getter is called`, () => {
+        beforeEach(() => {
+            const json = entity.json
+        })
+
+        test(`Then EntityUtil.populateJSONWithEntity should be called`, () => {
+            expect(EntityUtil.populateJSONWithEntity).toHaveBeenCalledWith(entity, {}, false)
+        })
+    })
+
+    describe(`When entity.json setter is called`, () => {
+        const json = {
+            id: 10
+        }
+
+        beforeEach(() => {
+            entity.json = json
+        })
+
+        test(`Then EntityUtil.populateEntity should be called`, () => {
+            expect(EntityUtil.populateEntityWithJSON).toHaveBeenCalledWith(entity, json)
+        })
+    })
+
+    describe(`When entity.clone is called`, () => {
+        let cloned:any
+
+        beforeEach(() => {
+            cloned =  entity.clone()
+        })
+
+        test(`Then the entity cloned should have the same content of the original one`, () => {
+            expect(cloned.json).toEqual(entity.json)
+        })
+
+        test(`And EntityUtil.populateEntityWithJSON to have been caleed`, () => {
+            expect(EntityUtil.populateEntityWithJSON).toHaveBeenCalled()
+        })
+    })
+
+    describe(`And another instance of Entity called entity2 with id 10`, () => {
+        let entity2: Entity
+
+        beforeEach(() => {
+            entity2 = new Entity()
+            entity.id = 10
+        })
+
+        describe(`When entity.syncFrom is called with entity2 as param`, () => {
+            beforeEach(() => {
+                entity.syncFrom(entity2)
+            })
+
+            test(`Then json of both instances should be the same`, () => {
+                expect(entity.json).toEqual(entity2.json)
+            })
+        })
+
+        describe(`When entity2.syncTo is called with entity as param`, () => {
+            beforeEach(() => {
+                entity2.syncTo(entity)
+            })
+
+            test(`Then json of both instances should be the same`, () => {
+                expect(entity.json).toEqual(entity2.json)
+            })
         })
     })
 });

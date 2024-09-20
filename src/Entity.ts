@@ -1,3 +1,4 @@
+import Collection from "./Collection";
 import EntityUtil from "./EntityUtil";
 
 class Entity {
@@ -69,14 +70,25 @@ class Entity {
     }
 
     // --------------------------------------
+    // addCollectionField
+    // --------------------------------------
+    addCollectionField(fieldName: string, entityClass: typeof Entity, foreignKeys: string[] = [], masterKeys: string[] = [], keyField: string = 'id') {
+        this.addField(fieldName, new Collection(entityClass, this, foreignKeys, masterKeys, keyField))
+    }
+
+    // --------------------------------------
     // json
     // --------------------------------------
     get json(): object {
         let json = {}
 
-        EntityUtil.populateJSONWithEntity(this, json)
+        EntityUtil.populateJSONWithEntity(this, json, false)
 
         return json
+    }
+
+    set json(value) {
+        EntityUtil.populateEntityWithJSON(this, value)
     }
 
     // --------------------------------------
@@ -88,6 +100,30 @@ class Entity {
         EntityUtil.populateJSONWithEntity(this, json, true)
 
         return json
+    }
+
+    // --------------------------------------
+    // sync
+    // --------------------------------------
+    syncFrom(master: Entity) {
+        this.json = master.json
+    }
+
+    syncTo(target: Entity) {
+        target.json = this.json
+    }
+
+    // --------------------------------------
+    // clone
+    // --------------------------------------
+    clone(): Entity {
+        const entityClass:any = this.constructor
+
+        let clone:Entity = new entityClass(this._isPersistent, this._specializationOf)
+
+        this.syncTo(clone)
+
+        return clone
     }
 }
 
